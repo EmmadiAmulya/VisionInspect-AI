@@ -1,0 +1,23 @@
+# Python virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Environment variables / secrets
+.env
+
+# Uploaded inspection images
+backend/app/uploads/
+
+# IDE
+.vscode/
+
+# Large dataset archive
+*.tar.xz
+
+# OS files
+Thumbs.db
+.DS_Store

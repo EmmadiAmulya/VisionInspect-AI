@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Backend uploaded images
+backend/app/uploads/
+
+# Dataset
+dataset/
+
+# Generated classification datasets
+classification_data/
+classification_data_backup/
+classification_data_clean/
+
+# Temporary files
+status.txt
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dataset archive
+*.tar.xz

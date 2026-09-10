@@ -1,0 +1,3672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>VisionInspect AI</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f7fb;
+
+            color: #1f2937;
+
+        }
+
+
+        /* ==================================================
+           LOGIN
+        ================================================== */
+
+        .login-page {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #1e3a5f
+                );
+
+        }
+
+
+        .login-card {
+
+            width: 420px;
+
+            max-width: 92%;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 20px 50px
+                rgba(0, 0, 0, 0.25);
+
+        }
+
+
+        .login-logo {
+
+            width: 70px;
+
+            height: 70px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 34px;
+
+        }
+
+
+        .login-card h1 {
+
+            text-align: center;
+
+            margin: 0;
+
+            color: #0f3d78;
+
+            font-size: 28px;
+
+        }
+
+
+        .login-card p {
+
+            text-align: center;
+
+            color: #64748b;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .login-card input {
+
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 14px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+        }
+
+
+        .login-btn {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-weight: bold;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+        }
+
+
+        .login-btn:hover {
+
+            background: #1d4ed8;
+
+        }
+
+
+        /* ==================================================
+           MAIN APPLICATION
+        ================================================== */
+
+        .app {
+
+            min-height: 100vh;
+
+            display: flex;
+
+        }
+
+
+        /* ==================================================
+           SIDEBAR
+        ================================================== */
+
+        .sidebar {
+
+            width: 225px;
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #172b46,
+                    #0f1f35
+                );
+
+            color: white;
+
+            position: fixed;
+
+            left: 0;
+
+            top: 0;
+
+            bottom: 0;
+
+            padding: 25px 14px;
+
+        }
+
+
+        .sidebar-logo {
+
+            text-align: center;
+
+            padding-bottom: 25px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.12);
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .sidebar-logo .gear {
+
+            font-size: 40px;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .sidebar-logo h2 {
+
+            margin: 0;
+
+            font-size: 19px;
+
+        }
+
+
+        .sidebar-logo span {
+
+            font-size: 11px;
+
+            color: #94a3b8;
+
+        }
+
+
+        .nav-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 8px;
+
+            border-radius: 8px;
+
+            color: #dbeafe;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+        }
+
+
+        .nav-item:hover {
+
+            background:
+                rgba(37, 99, 235, 0.35);
+
+        }
+
+
+        .nav-item.active {
+
+            background: #2563eb;
+
+            color: white;
+
+        }
+
+
+        .nav-icon {
+
+            font-size: 21px;
+
+            width: 25px;
+
+        }
+
+
+        .sidebar-footer {
+
+            position: absolute;
+
+            bottom: 25px;
+
+            left: 20px;
+
+            right: 20px;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* ==================================================
+           MAIN CONTENT
+        ================================================== */
+
+        .main {
+
+            margin-left: 225px;
+
+            width: calc(100% - 225px);
+
+            min-height: 100vh;
+
+        }
+
+
+        /* ==================================================
+           TOP HEADER
+        ================================================== */
+
+        .top-header {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #183a63,
+                    #142d4d
+                );
+
+            color: white;
+
+            padding: 18px 28px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+        }
+
+
+        .brand h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+
+        }
+
+
+        .brand h1 span {
+
+            color: #2196f3;
+
+        }
+
+
+        .brand p {
+
+            margin: 2px 0 0;
+
+            color: #dbeafe;
+
+            font-size: 14px;
+
+        }
+
+
+        .user-area {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+        }
+
+
+        .logged-user {
+
+            font-size: 14px;
+
+        }
+
+
+        .logout-btn {
+
+            border: none;
+
+            background: #ef4444;
+
+            color: white;
+
+            padding: 10px 18px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+        }
+
+
+        .logout-btn:hover {
+
+            background: #dc2626;
+
+        }
+
+
+        /* ==================================================
+           CONTENT
+        ================================================== */
+
+        .content {
+
+            padding: 25px;
+
+            max-width: 1450px;
+
+            margin: auto;
+
+        }
+
+
+        .page-title {
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .page-title h2 {
+
+            margin: 0;
+
+            color: #123f78;
+
+        }
+
+
+        .page-title p {
+
+            margin: 5px 0 0;
+
+            color: #64748b;
+
+        }
+
+
+        /* ==================================================
+           STAT CARDS
+        ================================================== */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .stat-card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.07);
+
+            border: 1px solid #e2e8f0;
+
+        }
+
+
+        .stat-icon {
+
+            width: 58px;
+
+            height: 58px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 27px;
+
+        }
+
+
+        .icon-blue {
+
+            background: #dbeafe;
+
+            color: #2563eb;
+
+        }
+
+
+        .icon-green {
+
+            background: #dcfce7;
+
+            color: #16a34a;
+
+        }
+
+
+        .icon-red {
+
+            background: #fee2e2;
+
+            color: #dc2626;
+
+        }
+
+
+        .icon-yellow {
+
+            background: #fef3c7;
+
+            color: #d97706;
+
+        }
+
+
+        .stat-card h3 {
+
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 14px;
+
+        }
+
+
+        .stat-card p {
+
+            margin: 5px 0 0;
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+            color: #0f172a;
+
+        }
+
+
+        /* ==================================================
+           AI STATUS BAR
+        ================================================== */
+
+        .ai-status {
+
+            background: #f0fdf4;
+
+            border:
+                1px solid #bbf7d0;
+
+            border-radius: 10px;
+
+            padding: 16px 20px;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .ai-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 0 20px;
+
+            border-right:
+                1px solid #bbf7d0;
+
+        }
+
+
+        .ai-item:last-child {
+
+            border-right: none;
+
+        }
+
+
+        .ai-icon {
+
+            font-size: 30px;
+
+            color: #15803d;
+
+        }
+
+
+        .ai-item strong {
+
+            display: block;
+
+            color: #334155;
+
+            font-size: 14px;
+
+        }
+
+
+        .active {
+
+            color: #16a34a;
+
+            font-weight: bold;
+
+            margin-top: 3px;
+
+        }
+
+
+        .ai-description {
+
+            font-size: 11px;
+
+            color: #64748b;
+
+            margin-top: 3px;
+
+        }
+
+
+        /* ==================================================
+           CARD
+        ================================================== */
+
+        .card {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 22px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.07);
+
+            border:
+                1px solid #e2e8f0;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        .card-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .card-title h2 {
+
+            margin: 0;
+
+            color: #123f78;
+
+            font-size: 20px;
+
+        }
+
+
+        .card-title-icon {
+
+            color: #2563eb;
+
+            font-size: 24px;
+
+        }
+
+
+        /* ==================================================
+           UPLOAD
+        ================================================== */
+
+        .upload-area {
+
+            border:
+                2px dashed #cbd5e1;
+
+            border-radius: 10px;
+
+            padding: 25px;
+
+            background: #f8fafc;
+
+        }
+
+
+        .upload-row {
+
+            display: flex;
+
+            gap: 15px;
+
+            align-items: center;
+
+        }
+
+
+        .file-input {
+
+            flex: 1;
+
+            background: white;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            padding: 10px;
+
+        }
+
+
+        .inspect-btn {
+
+            width: 210px;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #1677ed;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        .inspect-btn:hover {
+
+            background: #1265cb;
+
+        }
+
+
+        .inspect-btn:disabled {
+
+            background: #94a3b8;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .supported {
+
+            margin-top: 8px;
+
+            color: #64748b;
+
+            font-size: 12px;
+
+        }
+
+
+        .message {
+
+            margin-top: 12px;
+
+            font-weight: bold;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==================================================
+           RESULT GRID
+        ================================================== */
+
+        .result-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1.05fr 0.95fr;
+
+            gap: 22px;
+
+        }
+
+
+        /* ==================================================
+           IMAGE PANEL
+        ================================================== */
+
+        .image-panel {
+
+            min-width: 0;
+
+        }
+
+
+        .image-wrapper {
+
+            position: relative;
+
+            width: 100%;
+
+            background: #0f172a;
+
+            border-radius: 8px;
+
+            overflow: hidden;
+
+            display: inline-block;
+
+        }
+
+
+        #resultImage {
+
+            display: block;
+
+            width: 100%;
+
+            height: auto;
+
+        }
+
+
+        /* ==================================================
+           DEFECT BOX
+        ================================================== */
+
+        .defect-box {
+
+            position: absolute;
+
+            border:
+                3px solid #ff0000;
+
+            background:
+                rgba(255,0,0,0.08);
+
+            pointer-events: none;
+
+            z-index: 5;
+
+        }
+
+
+        /* ==================================================
+           DEFECT CIRCLE
+        ================================================== */
+
+        .defect-circle {
+
+            position: absolute;
+
+            border:
+                4px solid #ff0000;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            z-index: 6;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(255,255,255,0.5);
+
+        }
+
+
+        /* ==================================================
+           DEFECT LABEL
+        ================================================== */
+
+        .defect-label {
+
+            position: absolute;
+
+            background: #ef0000;
+
+            color: white;
+
+            padding: 7px 11px;
+
+            border-radius: 5px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+
+            z-index: 7;
+
+            pointer-events: none;
+
+            box-shadow:
+                0 3px 8px
+                rgba(0,0,0,0.3);
+
+        }
+
+
+        .defect-arrow {
+
+            position: absolute;
+
+            width: 0;
+
+            height: 0;
+
+            border-left:
+                8px solid transparent;
+
+            border-right:
+                8px solid transparent;
+
+            border-top:
+                12px solid #ef0000;
+
+            z-index: 7;
+
+            pointer-events: none;
+
+        }
+
+
+        .no-defect-message {
+
+            position: absolute;
+
+            left: 50%;
+
+            top: 50%;
+
+            transform:
+                translate(-50%, -50%);
+
+            background:
+                rgba(22,163,74,0.92);
+
+            color: white;
+
+            padding: 12px 18px;
+
+            border-radius: 7px;
+
+            font-weight: bold;
+
+            z-index: 8;
+
+        }
+
+
+        /* ==================================================
+           RESULT HEADER
+        ================================================== */
+
+        .result-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .result-header h2 {
+
+            margin: 0;
+
+            color: #123f78;
+
+        }
+
+
+        .status-badge {
+
+            padding: 9px 22px;
+
+            border-radius: 25px;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+        }
+
+
+        .status-pass {
+
+            background: #dcfce7;
+
+            color: #15803d;
+
+        }
+
+
+        .status-fail {
+
+            background: #fee2e2;
+
+            color: #dc2626;
+
+        }
+
+
+        /* ==================================================
+           RESULT TABLE
+        ================================================== */
+
+        .result-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+
+        .result-table tr {
+
+            border-bottom:
+                1px solid #e2e8f0;
+
+        }
+
+
+        .result-table th {
+
+            text-align: left;
+
+            padding: 11px 10px;
+
+            color: #334155;
+
+            width: 48%;
+
+            font-size: 13px;
+
+        }
+
+
+        .result-table td {
+
+            padding: 11px 10px;
+
+            color: #475569;
+
+            font-size: 13px;
+
+        }
+
+
+        .defect-name {
+
+            color: #2563eb;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           SEVERITY
+        ================================================== */
+
+        .severity-box {
+
+            margin-top: 18px;
+
+            padding: 18px;
+
+            background: #f8fafc;
+
+            border-radius: 8px;
+
+            border:
+                1px solid #e2e8f0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+        }
+
+
+        .severity-score {
+
+            font-size: 34px;
+
+            font-weight: bold;
+
+            color: #0f172a;
+
+        }
+
+
+        .severity-level {
+
+            padding: 8px 17px;
+
+            border-radius: 20px;
+
+            font-weight: bold;
+
+        }
+
+
+        .severity-low {
+
+            background: #dcfce7;
+
+            color: #15803d;
+
+        }
+
+
+        .severity-medium {
+
+            background: #fef3c7;
+
+            color: #b45309;
+
+        }
+
+
+        .severity-high {
+
+            background: #fee2e2;
+
+            color: #dc2626;
+
+        }
+
+
+        .severity-critical {
+
+            background: #7f1d1d;
+
+            color: white;
+
+        }
+
+
+        /* ==================================================
+           COMPLETED MESSAGE
+        ================================================== */
+
+        .completed {
+
+            margin-top: 18px;
+
+            padding: 14px;
+
+            background: #f0fdf4;
+
+            border:
+                1px solid #bbf7d0;
+
+            border-radius: 8px;
+
+            color: #15803d;
+
+            font-weight: bold;
+
+        }
+
+
+        /* ==================================================
+           QUALITY RESULT
+        ================================================== */
+
+        .quality-box {
+
+            margin-top: 15px;
+
+            padding: 12px;
+
+            border-radius: 7px;
+
+            background: #eff6ff;
+
+            color: #1e40af;
+
+            font-size: 13px;
+
+        }
+
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        footer {
+
+            padding: 20px 25px;
+
+            color: #64748b;
+
+            font-size: 12px;
+
+            border-top:
+                1px solid #e2e8f0;
+
+            display: flex;
+
+            justify-content: space-between;
+
+        }
+
+
+        /* ==================================================
+           HIDDEN
+        ================================================== */
+
+        .hidden {
+
+            display: none !important;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+        ================================================== */
+
+        @media (max-width: 1050px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+            .ai-status {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+                gap: 15px;
+
+            }
+
+            .ai-item {
+
+                border-right: none;
+
+            }
+
+            .result-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            .sidebar {
+
+                width: 70px;
+
+            }
+
+            .sidebar-logo h2,
+            .sidebar-logo span,
+            .nav-item span,
+            .sidebar-footer {
+
+                display: none;
+
+            }
+
+            .sidebar-logo .gear {
+
+                font-size: 30px;
+
+            }
+
+            .nav-item {
+
+                justify-content: center;
+
+            }
+
+            .main {
+
+                margin-left: 70px;
+
+                width:
+                    calc(100% - 70px);
+
+            }
+
+            .top-header {
+
+                padding: 15px;
+
+            }
+
+            .brand h1 {
+
+                font-size: 21px;
+
+            }
+
+            .brand p {
+
+                display: none;
+
+            }
+
+            .user-area {
+
+                gap: 8px;
+
+            }
+
+            .logged-user {
+
+                display: none;
+
+            }
+
+            .upload-row {
+
+                flex-direction: column;
+
+            }
+
+            .file-input,
+            .inspect-btn {
+
+                width: 100%;
+
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .stats {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .ai-status {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .content {
+
+                padding: 14px;
+
+            }
+
+            footer {
+
+                flex-direction: column;
+
+                gap: 5px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================================
+     LOGIN PAGE
+======================================================= -->
+
+<section
+    id="loginSection"
+    class="login-page"
+>
+
+    <div class="login-card">
+
+        <div class="login-logo">
+            ⚙
+        </div>
+
+        <h1>
+            VisionInspect AI
+        </h1>
+
+        <p>
+            Manufacturing Quality Inspection
+        </p>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Username"
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+        >
+
+        <button
+            class="login-btn"
+            onclick="login()"
+        >
+            Login
+        </button>
+
+        <div
+            id="loginMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ======================================================
+     APPLICATION
+======================================================= -->
+
+<section
+    id="appSection"
+    class="app hidden"
+>
+
+
+    <!-- ==================================================
+         SIDEBAR
+    =================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="gear">
+                ⚙
+            </div>
+
+            <h2>
+                VisionInspect AI
+            </h2>
+
+            <span>
+                Quality Inspection
+            </span>
+
+        </div>
+
+
+        <div
+            class="nav-item active"
+        >
+
+            <div class="nav-icon">
+                🏠
+            </div>
+
+            <span>
+                Dashboard
+            </span>
+
+        </div>
+
+
+        <div
+            class="nav-item"
+            onclick="focusUpload()"
+        >
+
+            <div class="nav-icon">
+                🖼️
+            </div>
+
+            <span>
+                Inspect Image
+            </span>
+
+        </div>
+
+
+        <div
+            class="nav-item"
+            onclick="focusResult()"
+        >
+
+            <div class="nav-icon">
+                🔍
+            </div>
+
+            <span>
+                Results
+            </span>
+
+        </div>
+
+
+        <div class="nav-item">
+
+            <div class="nav-icon">
+                👤
+            </div>
+
+            <span>
+                Profile
+            </span>
+
+        </div>
+
+
+        <div class="sidebar-footer">
+
+            VisionInspect AI
+
+            <br>
+
+            v1.0.0
+
+            <br><br>
+
+            FastAPI • PyTorch • OpenCV
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ==================================================
+         MAIN
+    =================================================== -->
+
+    <main class="main">
+
+
+        <!-- ==============================================
+             HEADER
+        =============================================== -->
+
+        <header class="top-header">
+
+            <div class="brand">
+
+                <h1>
+                    Vision<span>Inspect</span> AI
+                </h1>
+
+                <p>
+                    Manufacturing Quality Inspection
+                </p>
+
+            </div>
+
+
+            <div class="user-area">
+
+                <div
+                    class="logged-user"
+                    id="loggedUser"
+                >
+                    Logged in
+                </div>
+
+                <button
+                    class="logout-btn"
+                    onclick="logout()"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ==============================================
+             CONTENT
+        =============================================== -->
+
+        <div class="content">
+
+
+            <!-- ==========================================
+                 TITLE
+            =========================================== -->
+
+            <div class="page-title">
+
+                <h2>
+                    Inspection Dashboard
+                </h2>
+
+                <p>
+                    AI-powered manufacturing defect detection
+                    and quality analysis
+                </p>
+
+            </div>
+
+
+
+            <!-- ==========================================
+                 STATISTICS
+            =========================================== -->
+
+            <div class="stats">
+
+
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon icon-blue"
+                    >
+                        📋
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Total Inspections
+                        </h3>
+
+                        <p id="totalCount">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon icon-green"
+                    >
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Pass
+                        </h3>
+
+                        <p id="passedCount">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon icon-red"
+                    >
+                        ✕
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Fail
+                        </h3>
+
+                        <p id="failedCount">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div
+                        class="stat-icon icon-yellow"
+                    >
+                        ◷
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Pending
+                        </h3>
+
+                        <p id="pendingCount">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==========================================
+                 AI STATUS
+            =========================================== -->
+
+            <div class="ai-status">
+
+
+                <div class="ai-item">
+
+                    <div class="ai-icon">
+                        🖼️
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Image Quality
+                        </strong>
+
+                        <div class="active">
+                            Active
+                        </div>
+
+                        <div class="ai-description">
+                            Checks image clarity and resolution
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="ai-item">
+
+                    <div class="ai-icon">
+                        🧠
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            AI Detection
+                        </strong>
+
+                        <div class="active">
+                            Active
+                        </div>
+
+                        <div class="ai-description">
+                            Detects anomalies in product
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="ai-item">
+
+                    <div class="ai-icon">
+                        🏷️
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Classification
+                        </strong>
+
+                        <div class="active">
+                            Active
+                        </div>
+
+                        <div class="ai-description">
+                            Identifies defect type
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="ai-item">
+
+                    <div class="ai-icon">
+                        📊
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Severity Analysis
+                        </strong>
+
+                        <div class="active">
+                            Active
+                        </div>
+
+                        <div class="ai-description">
+                            Calculates defect severity
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ==========================================
+                 UPLOAD
+            =========================================== -->
+
+            <div
+                class="card"
+                id="uploadCard"
+            >
+
+                <div class="card-title">
+
+                    <div class="card-title-icon">
+                        ⬆
+                    </div>
+
+                    <h2>
+                        Upload Product Image
+                    </h2>
+
+                </div>
+
+
+                <div class="upload-area">
+
+                    <p>
+                        Upload an image of the product
+                        for AI inspection.
+                    </p>
+
+
+                    <div class="upload-row">
+
+                        <input
+                            class="file-input"
+                            type="file"
+                            id="imageFile"
+                            accept=".jpg,.jpeg,.png,.bmp"
+                        >
+
+
+                        <button
+                            class="inspect-btn"
+                            id="inspectButton"
+                            onclick="uploadImage()"
+                        >
+                            🔍 Inspect Image
+                        </button>
+
+                    </div>
+
+
+                    <div class="supported">
+
+                        Supported formats:
+                        JPG, JPEG, PNG, BMP
+
+                    </div>
+
+
+                    <div
+                        id="uploadMessage"
+                        class="message"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==========================================
+                 RESULT
+            =========================================== -->
+
+            <div
+                id="resultSection"
+                class="hidden"
+            >
+
+
+                <div class="result-grid">
+
+
+                    <!-- ==================================
+                         IMAGE
+                    =================================== -->
+
+                    <div
+                        class="card image-panel"
+                        id="imagePanel"
+                    >
+
+                        <div class="card-title">
+
+                            <div class="card-title-icon">
+                                🖼️
+                            </div>
+
+                            <h2>
+                                Inspection Image
+                                <span id="imageTitle">
+                                    (Defect Highlighted)
+                                </span>
+                            </h2>
+
+                        </div>
+
+
+                        <div
+                            class="image-wrapper"
+                            id="imageWrapper"
+                        >
+
+                            <img
+                                id="resultImage"
+                                alt="Inspected Product"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ==================================
+                         RESULT DETAILS
+                    =================================== -->
+
+                    <div
+                        class="card"
+                        id="resultPanel"
+                    >
+
+
+                        <div class="result-header">
+
+                            <h2>
+                                Inspection Result
+                            </h2>
+
+                            <span
+                                id="resultStatusBadge"
+                                class="status-badge status-fail"
+                            >
+                                FAIL
+                            </span>
+
+                        </div>
+
+
+                        <table
+                            class="result-table"
+                        >
+
+                            <tr>
+
+                                <th>
+                                    Inspection ID
+                                </th>
+
+                                <td
+                                    id="resultInspectionId"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Defect Detected
+                                </th>
+
+                                <td
+                                    id="resultDefectDetected"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Defect Type
+                                </th>
+
+                                <td
+                                    id="resultDefectType"
+                                    class="defect-name"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Classification Confidence
+                                </th>
+
+                                <td
+                                    id="resultConfidence"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Reconstruction Error
+                                </th>
+
+                                <td
+                                    id="resultReconstructionError"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Local Anomaly Score
+                                </th>
+
+                                <td
+                                    id="resultLocalScore"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Detection Threshold
+                                </th>
+
+                                <td
+                                    id="resultThreshold"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Defect Location
+                                </th>
+
+                                <td
+                                    id="resultLocation"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Inspector
+                                </th>
+
+                                <td
+                                    id="resultInspector"
+                                >
+                                </td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    User Role
+                                </th>
+
+                                <td
+                                    id="resultRole"
+                                >
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+
+
+                        <!-- ==============================
+                             SEVERITY
+                        =============================== -->
+
+                        <div class="severity-box">
+
+                            <div>
+
+                                <div
+                                    style="
+                                    color:#64748b;
+                                    font-size:13px;
+                                    "
+                                >
+                                    Severity Score
+                                </div>
+
+                                <div
+                                    id="severityScore"
+                                    class="severity-score"
+                                >
+                                    0
+                                </div>
+
+                                <div
+                                    style="
+                                    color:#94a3b8;
+                                    font-size:11px;
+                                    "
+                                >
+                                    out of 100
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                <div
+                                    style="
+                                    color:#64748b;
+                                    font-size:13px;
+                                    margin-bottom:7px;
+                                    "
+                                >
+                                    Severity Level
+                                </div>
+
+                                <div
+                                    id="severityLevel"
+                                    class="severity-level severity-low"
+                                >
+                                    LOW
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- ==============================
+                             QUALITY
+                        =============================== -->
+
+                        <div
+                            id="qualityResult"
+                            class="quality-box"
+                        >
+                            Image quality check passed.
+                        </div>
+
+
+
+                        <!-- ==============================
+                             COMPLETED
+                        =============================== -->
+
+                        <div class="completed">
+
+                            ✓ Inspection Completed
+
+                            <br>
+
+                            <span
+                                style="
+                                font-weight:normal;
+                                font-size:12px;
+                                "
+                            >
+                                Image uploaded and inspected
+                                successfully.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==============================================
+             FOOTER
+        =============================================== -->
+
+        <footer>
+
+            <div>
+                <strong>
+                    VisionInspect AI
+                </strong>
+                |
+                Manufacturing Quality Inspection
+            </div>
+
+            <div>
+                Built with FastAPI, PyTorch and OpenCV
+            </div>
+
+        </footer>
+
+
+    </main>
+
+</section>
+
+
+
+<script>
+
+
+// ======================================================
+// API URL
+// ======================================================
+
+const API_URL =
+    "http://127.0.0.1:8000";
+
+
+// ======================================================
+// LOGIN
+// ======================================================
+
+async function login() {
+
+    const username =
+        document
+            .getElementById("username")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("password")
+            .value;
+
+
+    const message =
+        document
+            .getElementById("loginMessage");
+
+
+    if (
+        !username ||
+        !password
+    ) {
+
+        message.innerText =
+            "Please enter username and password.";
+
+        return;
+
+    }
+
+
+    try {
+
+        const formData =
+            new URLSearchParams();
+
+
+        formData.append(
+            "username",
+            username
+        );
+
+
+        formData.append(
+            "password",
+            password
+        );
+
+
+        const response =
+            await fetch(
+                `${API_URL}/auth/login`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            message.innerText =
+                data.detail ||
+                "Login failed.";
+
+            return;
+
+        }
+
+
+        localStorage.setItem(
+            "access_token",
+            data.access_token
+        );
+
+
+        localStorage.setItem(
+            "username",
+            username
+        );
+
+
+        showApplication(
+            username
+        );
+
+
+        await loadInspectionHistory();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+
+        message.innerText =
+            "Could not connect to backend.";
+
+    }
+
+}
+
+
+// ======================================================
+// SHOW APPLICATION
+// ======================================================
+
+function showApplication(
+    username
+) {
+
+    document
+        .getElementById("loginSection")
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById("appSection")
+        .classList
+        .remove("hidden");
+
+
+    document
+        .getElementById("loggedUser")
+        .innerText =
+            `Logged in as: ${username} (Inspector)`;
+
+}
+
+
+// ======================================================
+// LOAD INSPECTION HISTORY
+// ======================================================
+
+async function loadInspectionHistory() {
+
+    const token =
+        localStorage.getItem(
+            "access_token"
+        );
+
+
+    if (!token) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/inspections/history`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(
+                "History error:",
+                data
+            );
+
+            return;
+
+        }
+
+
+        let passed = 0;
+
+        let failed = 0;
+
+        let pending = 0;
+
+
+        data.forEach(
+            inspection => {
+
+                if (
+                    inspection.status ===
+                    "PASS"
+                ) {
+
+                    passed++;
+
+                }
+
+                else if (
+                    inspection.status ===
+                    "FAIL"
+                ) {
+
+                    failed++;
+
+                }
+
+                else {
+
+                    pending++;
+
+                }
+
+            }
+        );
+
+
+        document
+            .getElementById("totalCount")
+            .innerText =
+                data.length;
+
+
+        document
+            .getElementById("passedCount")
+            .innerText =
+                passed;
+
+
+        document
+            .getElementById("failedCount")
+            .innerText =
+                failed;
+
+
+        document
+            .getElementById("pendingCount")
+            .innerText =
+                pending;
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "History error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// UPLOAD IMAGE
+// ======================================================
+
+async function uploadImage() {
+
+    const fileInput =
+        document
+            .getElementById(
+                "imageFile"
+            );
+
+
+    const message =
+        document
+            .getElementById(
+                "uploadMessage"
+            );
+
+
+    const button =
+        document
+            .getElementById(
+                "inspectButton"
+            );
+
+
+    const file =
+        fileInput.files[0];
+
+
+    if (!file) {
+
+        message.innerText =
+            "Please select an image.";
+
+        return;
+
+    }
+
+
+    const token =
+        localStorage.getItem(
+            "access_token"
+        );
+
+
+    if (!token) {
+
+        message.innerText =
+            "Please login first.";
+
+        return;
+
+    }
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        file
+    );
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "⏳ Inspecting...";
+
+
+    message.innerText =
+        "Checking image quality and running AI inspection...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/inspections/upload`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        // ==============================================
+        // POOR IMAGE QUALITY
+        // ==============================================
+
+        if (
+            data.status ===
+            "REJECTED"
+        ) {
+
+            message.innerText =
+                "❌ Image rejected because of poor quality.";
+
+            showQualityResult(
+                data.image_quality
+            );
+
+            button.disabled = false;
+
+            button.innerText =
+                "🔍 Inspect Image";
+
+            return;
+
+        }
+
+
+        if (!response.ok) {
+
+            message.innerText =
+                data.detail ||
+                "Inspection failed.";
+
+            button.disabled = false;
+
+            button.innerText =
+                "🔍 Inspect Image";
+
+            return;
+
+        }
+
+
+        // ==============================================
+        // SUCCESS
+        // ==============================================
+
+        message.innerText =
+            "✓ Inspection completed successfully.";
+
+
+        document
+            .getElementById(
+                "resultSection"
+            )
+            .classList
+            .remove("hidden");
+
+
+        // ==============================================
+        // RESULT DATA
+        // ==============================================
+
+        document
+            .getElementById(
+                "resultInspectionId"
+            )
+            .innerText =
+                data.inspection_id;
+
+
+        document
+            .getElementById(
+                "resultDefectDetected"
+            )
+            .innerText =
+                data.defect_detected
+                    ? "Yes"
+                    : "No";
+
+
+        document
+            .getElementById(
+                "resultDefectType"
+            )
+            .innerText =
+                data.defect_type ||
+                "good";
+
+
+        document
+            .getElementById(
+                "resultConfidence"
+            )
+            .innerText =
+                formatPercent(
+                    data.classification_confidence
+                );
+
+
+        document
+            .getElementById(
+                "resultReconstructionError"
+            )
+            .innerText =
+                data.reconstruction_error;
+
+
+        document
+            .getElementById(
+                "resultLocalScore"
+            )
+            .innerText =
+                data.local_anomaly_score;
+
+
+        document
+            .getElementById(
+                "resultThreshold"
+            )
+            .innerText =
+                data.detection_threshold;
+
+
+        document
+            .getElementById(
+                "resultInspector"
+            )
+            .innerText =
+                data.inspector ||
+                "-";
+
+
+        document
+            .getElementById(
+                "resultRole"
+            )
+            .innerText =
+                data.user_role ||
+                "-";
+
+
+        // ==============================================
+        // STATUS
+        // ==============================================
+
+        const statusBadge =
+            document
+                .getElementById(
+                    "resultStatusBadge"
+                );
+
+
+        statusBadge.innerText =
+            data.status;
+
+
+        statusBadge.className =
+            "status-badge";
+
+
+        if (
+            data.status ===
+            "PASS"
+        ) {
+
+            statusBadge.classList.add(
+                "status-pass"
+            );
+
+        }
+
+        else {
+
+            statusBadge.classList.add(
+                "status-fail"
+            );
+
+        }
+
+
+        // ==============================================
+        // SEVERITY
+        // ==============================================
+
+        document
+            .getElementById(
+                "severityScore"
+            )
+            .innerText =
+                Number(
+                    data.severity_score || 0
+                ).toFixed(2);
+
+
+        const severityElement =
+            document
+                .getElementById(
+                    "severityLevel"
+                );
+
+
+        severityElement.innerText =
+            data.severity_level ||
+            "Low";
+
+
+        severityElement.className =
+            "severity-level";
+
+
+        applySeverityClass(
+            severityElement,
+            data.severity_level
+        );
+
+
+        // ==============================================
+        // IMAGE
+        // ==============================================
+
+        const imageUrl =
+            `${API_URL}/${data.image_path.replace(
+                /\\/g,
+                "/"
+            )}`;
+
+
+        const resultImage =
+            document
+                .getElementById(
+                    "resultImage"
+                );
+
+
+        resultImage.src =
+            imageUrl;
+
+
+        // ==============================================
+        // DEFECT LOCATION
+        // ==============================================
+
+        document
+            .getElementById(
+                "resultLocation"
+            )
+            .innerText =
+                formatLocation(
+                    data.defect_region
+                );
+
+
+        // ==============================================
+        // DRAW DEFECT
+        // ==============================================
+
+        resultImage.onload =
+            function() {
+
+                drawDefect(
+                    data.defect_region,
+                    data.defect_detected,
+                    data.defect_type
+                );
+
+            };
+
+
+        // If image already loaded
+        if (
+            resultImage.complete &&
+            resultImage.naturalWidth > 0
+        ) {
+
+            drawDefect(
+                data.defect_region,
+                data.defect_detected,
+                data.defect_type
+            );
+
+        }
+
+
+        // ==============================================
+        // QUALITY
+        // ==============================================
+
+        document
+            .getElementById(
+                "qualityResult"
+            )
+            .innerText =
+                "✓ Image quality check passed. " +
+                "Image accepted for AI inspection.";
+
+
+        // ==============================================
+        // REFRESH STATISTICS
+        // ==============================================
+
+        await loadInspectionHistory();
+
+
+        // ==============================================
+        // SCROLL TO RESULT
+        // ==============================================
+
+        document
+            .getElementById(
+                "resultSection"
+            )
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Upload error:",
+            error
+        );
+
+
+        message.innerText =
+            "Could not connect to backend.";
+
+    }
+
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "🔍 Inspect Image";
+
+    }
+
+}
+
+
+// ======================================================
+// DRAW DEFECT
+// ======================================================
+
+function drawDefect(
+    location,
+    defectDetected,
+    defectType
+) {
+
+    const wrapper =
+        document.getElementById(
+            "imageWrapper"
+        );
+
+
+    const image =
+        document.getElementById(
+            "resultImage"
+        );
+
+
+    // Remove old markings
+    document
+        .querySelectorAll(
+            ".defect-box, .defect-circle, .defect-label, .defect-arrow, .no-defect-message"
+        )
+        .forEach(
+            element => element.remove()
+        );
+
+
+    if (
+        !defectDetected ||
+        !location
+    ) {
+
+        const message =
+            document.createElement(
+                "div"
+            );
+
+
+        message.className =
+            "no-defect-message";
+
+
+        message.innerText =
+            "✓ NO DEFECT DETECTED";
+
+
+        wrapper.appendChild(
+            message
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+       IMPORTANT:
+
+       The AI localization coordinates
+       are based on the 224 x 224
+       processed image.
+
+       We therefore convert them
+       proportionally to the displayed
+       image size.
+    */
+
+
+    const displayedWidth =
+        image.clientWidth;
+
+
+    const displayedHeight =
+        image.clientHeight;
+
+
+    const scaleX =
+        displayedWidth / 224;
+
+
+    const scaleY =
+        displayedHeight / 224;
+
+
+    const x =
+        location.x * scaleX;
+
+
+    const y =
+        location.y * scaleY;
+
+
+    const width =
+        location.width * scaleX;
+
+
+    const height =
+        location.height * scaleY;
+
+
+    // ==============================================
+    // EXACT DEFECT BOX
+    // ==============================================
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+
+    box.className =
+        "defect-box";
+
+
+    box.style.left =
+        `${x}px`;
+
+
+    box.style.top =
+        `${y}px`;
+
+
+    box.style.width =
+        `${Math.max(width, 12)}px`;
+
+
+    box.style.height =
+        `${Math.max(height, 12)}px`;
+
+
+    wrapper.appendChild(
+        box
+    );
+
+
+    // ==============================================
+    // LARGE RED CIRCLE
+    // ==============================================
+
+    /*
+       The actual defect can be very small.
+       For example:
+
+       width = 6
+       height = 9
+
+       A tiny rectangle would be difficult
+       for a reviewer to see.
+
+       So we create a larger circle around
+       the exact detected region.
+    */
+
+
+    const centerX =
+        x + Math.max(width, 12) / 2;
+
+
+    const centerY =
+        y + Math.max(height, 12) / 2;
+
+
+    const circleSize =
+        Math.max(
+            65,
+            Math.max(width, height) * 4
+        );
+
+
+    const circle =
+        document.createElement(
+            "div"
+        );
+
+
+    circle.className =
+        "defect-circle";
+
+
+    circle.style.width =
+        `${circleSize}px`;
+
+
+    circle.style.height =
+        `${circleSize}px`;
+
+
+    circle.style.left =
+        `${centerX - circleSize / 2}px`;
+
+
+    circle.style.top =
+        `${centerY - circleSize / 2}px`;
+
+
+    wrapper.appendChild(
+        circle
+    );
+
+
+    // ==============================================
+    // LABEL
+    // ==============================================
+
+    const label =
+        document.createElement(
+            "div"
+        );
+
+
+    label.className =
+        "defect-label";
+
+
+    label.innerText =
+        `DEFECT DETECTED: ${defectType}`;
+
+
+    let labelLeft =
+        centerX + 35;
+
+
+    let labelTop =
+        centerY - 45;
+
+
+    // Prevent label going outside right side
+    if (
+        labelLeft + 180 >
+        displayedWidth
+    ) {
+
+        labelLeft =
+            Math.max(
+                5,
+                centerX - 190
+            );
+
+    }
+
+
+    // Prevent label going above image
+    if (
+        labelTop < 5
+    ) {
+
+        labelTop =
+            centerY + 35;
+
+    }
+
+
+    label.style.left =
+        `${labelLeft}px`;
+
+
+    label.style.top =
+        `${labelTop}px`;
+
+
+    wrapper.appendChild(
+        label
+    );
+
+
+    // ==============================================
+    // ARROW
+    // ==============================================
+
+    const arrow =
+        document.createElement(
+            "div"
+        );
+
+
+    arrow.className =
+        "defect-arrow";
+
+
+    arrow.style.left =
+        `${centerX - 8}px`;
+
+
+    arrow.style.top =
+        `${centerY - 18}px`;
+
+
+    wrapper.appendChild(
+        arrow
+    );
+
+}
+
+
+// ======================================================
+// FORMAT LOCATION
+// ======================================================
+
+function formatLocation(
+    location
+) {
+
+    if (!location) {
+
+        return "No defect region";
+
+    }
+
+
+    return (
+        `X: ${location.x}, ` +
+        `Y: ${location.y}, ` +
+        `Width: ${location.width}, ` +
+        `Height: ${location.height}`
+    );
+
+}
+
+
+// ======================================================
+// FORMAT PERCENTAGE
+// ======================================================
+
+function formatPercent(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "-";
+
+    }
+
+
+    return (
+        Number(value) * 100
+    ).toFixed(2) + "%";
+
+}
+
+
+// ======================================================
+// SEVERITY CLASS
+// ======================================================
+
+function applySeverityClass(
+    element,
+    level
+) {
+
+    if (
+        level ===
+        "Critical"
+    ) {
+
+        element.classList.add(
+            "severity-critical"
+        );
+
+    }
+
+    else if (
+        level ===
+        "High"
+    ) {
+
+        element.classList.add(
+            "severity-high"
+        );
+
+    }
+
+    else if (
+        level ===
+        "Medium"
+    ) {
+
+        element.classList.add(
+            "severity-medium"
+        );
+
+    }
+
+    else {
+
+        element.classList.add(
+            "severity-low"
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// QUALITY RESULT
+// ======================================================
+
+function showQualityResult(
+    quality
+) {
+
+    document
+        .getElementById(
+            "resultSection"
+        )
+        .classList
+        .remove("hidden");
+
+
+    document
+        .getElementById(
+            "qualityResult"
+        )
+        .innerText =
+            "❌ Image quality check failed. " +
+            "Please upload a clearer image.";
+
+}
+
+
+// ======================================================
+// FOCUS UPLOAD
+// ======================================================
+
+function focusUpload() {
+
+    document
+        .getElementById(
+            "uploadCard"
+        )
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+// ======================================================
+// FOCUS RESULT
+// ======================================================
+
+function focusResult() {
+
+    const result =
+        document.getElementById(
+            "resultSection"
+        );
+
+
+    if (
+        result.classList.contains(
+            "hidden"
+        )
+    ) {
+
+        focusUpload();
+
+        return;
+
+    }
+
+
+    result.scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+// ======================================================
+// LOGOUT
+// ======================================================
+
+function logout() {
+
+    localStorage.removeItem(
+        "access_token"
+    );
+
+
+    localStorage.removeItem(
+        "username"
+    );
+
+
+    document
+        .getElementById(
+            "appSection"
+        )
+        .classList
+        .add("hidden");
+
+
+    document
+        .getElementById(
+            "loginSection"
+        )
+        .classList
+        .remove("hidden");
+
+
+    document
+        .getElementById(
+            "username"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "password"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "resultSection"
+        )
+        .classList
+        .add("hidden");
+
+}
+
+
+// ======================================================
+// AUTO LOGIN
+// ======================================================
+
+window.addEventListener(
+    "load",
+    async function() {
+
+        const token =
+            localStorage.getItem(
+                "access_token"
+            );
+
+
+        const username =
+            localStorage.getItem(
+                "username"
+            );
+
+
+        if (
+            token &&
+            username
+        ) {
+
+            showApplication(
+                username
+            );
+
+
+            await loadInspectionHistory();
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>
