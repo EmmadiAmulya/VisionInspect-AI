@@ -111,6 +111,13 @@ print(
 # 5. LOAD MODEL
 # ============================================================
 
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(
+        f"Model weights not found: {MODEL_PATH}\n"
+        f"Train the classifier first or check the path."
+    )
+
+# Classifier checkpoint is a dict -> weights_only=False required.
 checkpoint = torch.load(
     MODEL_PATH,
     map_location=device,

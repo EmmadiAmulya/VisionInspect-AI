@@ -21,6 +21,25 @@ dataset/
 classification_data/
 classification_data_backup/
 classification_data_clean/
+classification_data_bottle_clean_eval/
+classification_data_cable/
+classification_data_capsule/
+classification_data_carpet/
+classification_data_grid/
+classification_data_hazelnut/
+classification_data_*/
+
+# Training logs
+training_*.log
+
+# Legacy static frontend (canonical is web-app/)
+frontend/
+
+# Bootstrapping helper (not part of repo)
+get-pip.py
+
+# ML visualizations output
+ml/visualizations/
 
 # Temporary files
 status.txt
@@ -34,3 +53,12 @@ Thumbs.db
 
 # Dataset archive
 *.tar.xz
+
+# Large model weights (retrain via ml/train_category.py; keep *.json thresholds)
+*.pth
+*.pt
+!ml/models/.gitkeep
+
+# Build output
+.dist/
+ml/visualizations/*.png

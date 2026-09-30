@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 import numpy as np
 import torch
 import torch.nn as nn
@@ -6,26 +8,44 @@ from PIL import Image
 from torchvision import transforms
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from category_utils import (
+        get_category_dirs, get_test_classes, normalize_category,
+        resolve_autoencoder_path,
+    )
+    _HAS_CAT = True
+except ImportError:
+    _HAS_CAT = False
+
+_parser = argparse.ArgumentParser(description="Evaluate autoencoder (any category).")
+_parser.add_argument("--category", default="bottle")
+_parser.add_argument("--model", default=None)
+_eval_args, _ = _parser.parse_known_args()
+CATEGORY = (
+    normalize_category(_eval_args.category) if _HAS_CAT
+    else (str(_eval_args.category).strip().lower() or "bottle")
+)
+
 
 # ============================================================
-# PATHS
+# PATHS (dynamic per category)
 # ============================================================
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-TEST_DIR = os.path.join(
-    BASE_DIR,
-    "dataset",
-    "mvtec_anomaly_detection",
-    "bottle",
-    "test"
-)
+if _HAS_CAT:
+    _DIRS = get_category_dirs(CATEGORY)
+    TEST_DIR = _DIRS["test_dir"]
+else:
+    TEST_DIR = os.path.join(
+        BASE_DIR, "dataset", "mvtec_anomaly_detection", CATEGORY, "test"
+    )
 
-MODEL_PATH = os.path.join(
-    BASE_DIR,
-    "ml",
-    "models",
-    "bottle_autoencoder.pth"
+MODEL_PATH = _eval_args.model or (
+    resolve_autoencoder_path(CATEGORY) if _HAS_CAT else os.path.join(
+        BASE_DIR, "ml", "models", f"{CATEGORY}_autoencoder.pth"
+    )
 )
 
 
@@ -113,7 +133,8 @@ model = Autoencoder()
 model.load_state_dict(
     torch.load(
         MODEL_PATH,
-        map_location=device
+        map_location=device,
+        weights_only=True
     )
 )
 
@@ -149,15 +170,21 @@ def calculate_error(image_path):
 
 
 # ============================================================
-# TEST CATEGORIES
+# TEST CATEGORIES (dynamic per category)
 # ============================================================
 
-categories = [
-    "good",
-    "broken_large",
-    "broken_small",
-    "contamination"
-]
+if _HAS_CAT:
+    categories = get_test_classes(CATEGORY)
+else:
+    categories = [
+        d for d in sorted(os.listdir(TEST_DIR))
+        if os.path.isdir(os.path.join(TEST_DIR, d))
+    ] or [
+        "good",
+        "broken_large",
+        "broken_small",
+        "contamination"
+    ]
 
 
 # ============================================================

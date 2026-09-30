@@ -1,3 +1,4 @@
+import argparse
 import os
 import cv2
 import numpy as np
@@ -54,14 +55,32 @@ BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
 
-MODEL_PATH = os.path.join(
+parser = argparse.ArgumentParser(
+    description="Visualize autoencoder reconstruction for one image."
+)
+
+parser.add_argument(
+    "--image",
+    default=None,
+    help="Path to input image.",
+)
+
+parser.add_argument(
+    "--model",
+    default=None,
+    help="Path to autoencoder weights.",
+)
+
+args = parser.parse_args()
+
+_DEFAULT_MODEL_PATH = os.path.join(
     BASE_DIR,
     "ml",
     "models",
     "bottle_autoencoder_v2.pth"
 )
 
-IMAGE_PATH = os.path.join(
+_DEFAULT_IMAGE_PATH = os.path.join(
     BASE_DIR,
     "dataset",
     "mvtec_anomaly_detection",
@@ -71,6 +90,10 @@ IMAGE_PATH = os.path.join(
     "000.png"
 )
 
+MODEL_PATH = args.model or _DEFAULT_MODEL_PATH
+
+IMAGE_PATH = args.image or _DEFAULT_IMAGE_PATH
+
 OUTPUT_DIR = os.path.join(
     BASE_DIR,
     "ml",
@@ -79,14 +102,23 @@ OUTPUT_DIR = os.path.join(
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-device = torch.device("cpu")
+device = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
+
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(
+        f"Model weights not found: {MODEL_PATH}\n"
+        f"Train the model first or check the path."
+    )
 
 model = Autoencoder().to(device)
 
 model.load_state_dict(
     torch.load(
         MODEL_PATH,
-        map_location=device
+        map_location=device,
+        weights_only=True
     )
 )
 

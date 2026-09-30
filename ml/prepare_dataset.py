@@ -1,30 +1,58 @@
+import argparse
 import os
+import sys
 import cv2
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from category_utils import (
+        get_category_dirs,
+        list_available_categories,
+        normalize_category,
+    )
+except ImportError:  # pragma: no cover - direct execution fallback
+    get_category_dirs = None
+
+parser = argparse.ArgumentParser(
+    description="VisionInspect dataset preparation (any MVTec category)."
+)
+parser.add_argument(
+    "--category", default="bottle",
+    help="MVTec category (e.g. bottle, cable, capsule).",
+)
+parser.add_argument(
+    "--list-categories", action="store_true",
+    help="List categories with data on disk and exit.",
+)
+_args, _unknown = parser.parse_known_args()
+if _args.list_categories and get_category_dirs is not None:
+    print("Available categories:", list_available_categories())
+    raise SystemExit(0)
+CATEGORY = normalize_category(_args.category) if get_category_dirs else (
+    str(_args.category).strip().lower() or "bottle"
+)
 
 
 # ==========================================
-# MVTec AD Bottle Dataset Paths
+# MVTec AD Dataset Paths (dynamic per category)
 # ==========================================
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-BOTTLE_DIR = os.path.join(
-    BASE_DIR,
-    "dataset",
-    "mvtec_anomaly_detection",
-    "bottle"
-)
+if get_category_dirs is not None:
+    _DIRS = get_category_dirs(CATEGORY)
+    CATEGORY_DIR = _DIRS["root"]
+    TRAIN_DIR = _DIRS["train_good_dir"]
+    TEST_DIR = _DIRS["test_dir"]
+else:  # fallback without category_utils
+    CATEGORY_DIR = os.path.join(
+        BASE_DIR, "dataset", "mvtec_anomaly_detection", CATEGORY
+    )
+    TRAIN_DIR = os.path.join(CATEGORY_DIR, "train", "good")
+    TEST_DIR = os.path.join(CATEGORY_DIR, "test")
 
-TRAIN_DIR = os.path.join(
-    BOTTLE_DIR,
-    "train",
-    "good"
-)
-
-TEST_DIR = os.path.join(
-    BOTTLE_DIR,
-    "test"
-)
+# Legacy aliases (bottle-era scripts may import these names).
+BOTTLE_DIR = CATEGORY_DIR
 
 
 # ==========================================
@@ -36,13 +64,14 @@ print("VisionInspect AI - Dataset Preparation")
 print("========================================")
 
 print("\nBottle dataset location:")
-print(BOTTLE_DIR)
+print(CATEGORY_DIR)
+print(f"Category: {CATEGORY}")
 
 print("\nChecking folders...")
 
 
-if not os.path.exists(BOTTLE_DIR):
-    print("ERROR: Bottle dataset folder not found.")
+if not os.path.exists(CATEGORY_DIR):
+    print(f"ERROR: {CATEGORY} dataset folder not found.")
     exit()
 
 

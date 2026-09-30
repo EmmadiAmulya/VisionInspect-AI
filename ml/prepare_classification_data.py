@@ -1,37 +1,117 @@
+import argparse
+import os
 import shutil
+import stat
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 
 # ============================================================
-# PATHS
+# WARNING: POTENTIAL DATA LEAKAGE
+# ============================================================
+# Current source is test/ ONLY (MVTec bottle/test per class).
+# Splitting test-only data into train/val/test means the
+# classifier never sees truly independent data and reported
+# metrics are optimistic.
+#
+# RECOMMENDED: include train/good (nominal training images) in
+# the "good" pool and then do a stratified split, or better,
+# keep MVTec train/ vs test/ disjoint and evaluate only on test/.
+# Use --include-train to merge train/good into the pool when
+# that folder exists. Default is OFF to avoid breaking existing
+# trained models, but the code path works when enabled.
+# ============================================================
+
+parser = argparse.ArgumentParser(
+    description="Build classification dataset from any MVTec category."
+)
+
+parser.add_argument(
+    "--category",
+    default="bottle",
+    help="MVTec category (e.g. bottle, cable, capsule).",
+)
+
+parser.add_argument(
+    "--output-dir",
+    default=None,
+    help=(
+        "Explicit output dir. Default: classification_data_clean for "
+        "bottle (legacy), classification_data_{category} otherwise."
+    ),
+)
+
+parser.add_argument(
+    "--include-train",
+    action="store_true",
+    help=(
+        "Also merge dataset/.../<category>/train/good into the "
+        "'good' pool before stratified split. Default off for "
+        "bottle (legacy weights); recommended ON for new categories."
+    ),
+)
+
+args = parser.parse_args()
+
+# ============================================================
+# PATHS (dynamic per category)
 # ============================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-DATASET_DIR = (
-    PROJECT_ROOT
-    / "dataset"
-    / "mvtec_anomaly_detection"
-    / "bottle"
-)
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(PROJECT_ROOT / "ml"))
+    from category_utils import (
+        get_category_dirs as _get_dirs,
+        get_test_classes as _get_classes,
+        normalize_category as _norm,
+        resolve_classification_data_dir as _resolve_data_dir,
+    )
+    CATEGORY = _norm(args.category)
+    _DIRS = _get_dirs(CATEGORY)
+    DATASET_DIR = Path(_DIRS["root"])
+    TEST_DIR = Path(_DIRS["test_dir"])
+    TRAIN_GOOD_DIR = Path(_DIRS["train_good_dir"])
+    if args.output_dir:
+        OUTPUT_DIR = Path(args.output_dir)
+    else:
+        OUTPUT_DIR = Path(_resolve_data_dir(CATEGORY))
+    CLASSES = sorted(_get_classes(CATEGORY))
+except ImportError:
+    CATEGORY = str(args.category).strip().lower() or "bottle"
+    DATASET_DIR = (
+        PROJECT_ROOT
+        / "dataset"
+        / "mvtec_anomaly_detection"
+        / CATEGORY
+    )
+    TEST_DIR = DATASET_DIR / "test"
+    TRAIN_GOOD_DIR = DATASET_DIR / "train" / "good"
+    if args.output_dir:
+        OUTPUT_DIR = Path(args.output_dir)
+    elif CATEGORY == "bottle":
+        OUTPUT_DIR = PROJECT_ROOT / "classification_data_clean"
+    else:
+        OUTPUT_DIR = PROJECT_ROOT / f"classification_data_{CATEGORY}"
+    CLASSES = [
+        d.name for d in sorted(TEST_DIR.iterdir()) if d.is_dir()
+    ] or ["good"]
 
-TEST_DIR = DATASET_DIR / "test"
-
-OUTPUT_DIR = PROJECT_ROOT / "classification_data_clean"
-
-CLASSES = [
-    "good",
-    "broken_large",
-    "broken_small",
-    "contamination"
-]
+print(f"Category: {CATEGORY}")
+print(f"Classes: {CLASSES}")
 
 # ============================================================
 # CLEAN OLD DATASET
 # ============================================================
 
 if OUTPUT_DIR.exists():
-    shutil.rmtree(OUTPUT_DIR)
+    def _writable(func, path, _exc):
+        try:
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+        except OSError:
+            pass
+    shutil.rmtree(OUTPUT_DIR, onerror=_writable)
 
 # ============================================================
 # CREATE FOLDERS
@@ -56,6 +136,23 @@ for class_name in CLASSES:
 
     for image_path in images:
         all_images.append((image_path, class_name))
+
+if args.include_train:
+    if TRAIN_GOOD_DIR.exists():
+        train_good = sorted(TRAIN_GOOD_DIR.glob("*.png"))
+
+        for image_path in train_good:
+            all_images.append((image_path, "good"))
+
+        print(
+            f"Merged train/good images: {len(train_good)} "
+            f"(via --include-train)"
+        )
+    else:
+        print(
+            f"WARNING: --include-train requested but not found: "
+            f"{TRAIN_GOOD_DIR}"
+        )
 
 print(f"\nTotal images found: {len(all_images)}")
 
@@ -110,7 +207,9 @@ def copy_images(paths, labels, split):
             / image_path.name
         )
 
-        shutil.copy2(image_path, destination)
+        # shutil.copyfile (not copy/copy2): MVTec sources are read-only
+        # and copy/copy2 propagate mode bits, breaking reruns on Windows.
+        shutil.copyfile(image_path, destination)
 
 
 copy_images(train_paths, train_labels, "train")

@@ -1,7 +1,7 @@
 import cv2
 
 
-def analyze_image_quality(image_path: str):
+def analyze_image_quality(image_path: str, blur_threshold: float = 20.0):
     """
     Analyze the uploaded image before AI inspection.
     Returns basic quality information.
@@ -13,6 +13,8 @@ def analyze_image_quality(image_path: str):
     if image is None:
         return {
             "valid": False,
+            "quality_ok": False,
+            "quality": "Poor",
             "message": "Image could not be read"
         }
 
@@ -36,7 +38,7 @@ def analyze_image_quality(image_path: str):
     brightness_ok = 30 <= brightness <= 230
 
     # 6. Basic blur check
-    blur_ok = blur_score >= 20
+    blur_ok = blur_score >= blur_threshold
 
     # Final quality decision
     quality_ok = resolution_ok and brightness_ok and blur_ok

@@ -1,0 +1,6 @@
+{
+  "category": "carpet",
+  "anomaly_threshold": 0.0045726499919554724,
+  "best_val_loss": 0.004237731802277267,
+  "val_images": 56
+}

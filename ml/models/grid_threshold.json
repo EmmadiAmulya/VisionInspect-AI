@@ -1,0 +1,6 @@
+{
+  "category": "grid",
+  "anomaly_threshold": 0.0027794090438927384,
+  "best_val_loss": 0.0024401817354373634,
+  "val_images": 53
+}

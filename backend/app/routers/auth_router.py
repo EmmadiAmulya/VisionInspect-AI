@@ -1,22 +1,75 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+import os
+import sys
+import time
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from database import get_db
-from models import User
-from schemas import UserRegister
-from auth import (
-    hash_password,
-    verify_password,
-    create_access_token,
-    get_current_user
-)
+try:
+    from database import get_db
+    from models import User
+    from schemas import UserRegister
+    from auth import (
+        hash_password,
+        verify_password,
+        create_access_token,
+        get_current_user
+    )
+except ImportError:
+    try:
+        from app.database import get_db
+        from app.models import User
+        from app.schemas import UserRegister
+        from app.auth import (
+            hash_password,
+            verify_password,
+            create_access_token,
+            get_current_user
+        )
+    except ImportError:
+        from backend.app.database import get_db
+        from backend.app.models import User
+        from backend.app.schemas import UserRegister
+        from backend.app.auth import (
+            hash_password,
+            verify_password,
+            create_access_token,
+            get_current_user
+        )
 
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
+
+
+# ==========================================
+# LOGIN RATE LIMIT (in-memory, no new deps)
+# ==========================================
+
+_login_attempts: dict[str, list[float]] = {}
+LOGIN_RATE_LIMIT_MAX = 10
+LOGIN_RATE_LIMIT_WINDOW = 60.0  # seconds
+
+
+def _check_login_rate_limit(key: str, now: float) -> bool:
+    """Return True if key exceeded max attempts in window."""
+    attempts = _login_attempts.get(key, [])
+    cutoff = now - LOGIN_RATE_LIMIT_WINDOW
+    attempts = [t for t in attempts if t > cutoff]
+    _login_attempts[key] = attempts
+    return len(attempts) >= LOGIN_RATE_LIMIT_MAX
+
+
+def _record_login_attempt(key: str, now: float) -> None:
+    attempts = _login_attempts.get(key, [])
+    cutoff = now - LOGIN_RATE_LIMIT_WINDOW
+    attempts = [t for t in attempts if t > cutoff]
+    attempts.append(now)
+    _login_attempts[key] = attempts
 
 
 # ==========================================
@@ -28,6 +81,12 @@ def register(
     user_data: UserRegister,
     db: Session = Depends(get_db)
 ):
+
+    if len(user_data.password) < 6:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be at least 6 characters"
+        )
 
     # Check username
     existing_username = db.query(User).filter(
@@ -66,7 +125,14 @@ def register(
 
     db.add(new_user)
 
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Username or email already exists"
+        )
 
     db.refresh(new_user)
 
@@ -85,9 +151,21 @@ def register(
 
 @router.post("/login")
 def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
+
+    # Rate-limit per IP + username: max 10 attempts per 60s
+    client_ip = request.client.host if request.client else "unknown"
+    rate_key = f"{client_ip}:{form_data.username}"
+    now = time.time()
+    if _check_login_rate_limit(rate_key, now):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many login attempts. Try again later."
+        )
+    _record_login_attempt(rate_key, now)
 
     # Find user
     user = db.query(User).filter(
@@ -111,8 +189,9 @@ def login(
             detail="User account is inactive"
         )
 
-    # Create JWT
+    # Create JWT (sub=user.id, with username claim)
     access_token = create_access_token(
+        user.id,
         user.username
     )
 

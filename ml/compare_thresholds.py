@@ -1,7 +1,24 @@
 import os
+import sys
 import cv2
 import torch
 import numpy as np
+
+sys.path.insert(
+    0,
+    os.path.dirname(os.path.abspath(__file__))
+)
+
+from common import (
+    IMG_SIZE,
+    PERCENTILE,
+    GAUSS,
+    BORDER,
+    AREA_MIN,
+    AREA_MAX,
+    MAX_WH,
+    DEVICE,
+)
 
 from sklearn.metrics import (
     accuracy_score,
@@ -122,7 +139,13 @@ class Autoencoder(torch.nn.Module):
 # LOAD MODEL
 # ============================================================
 
-device = torch.device("cpu")
+device = DEVICE
+
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(
+        f"Model weights not found: {MODEL_PATH}\n"
+        f"Train the model first or check the path."
+    )
 
 model = Autoencoder().to(device)
 
@@ -152,7 +175,7 @@ def get_local_score(image_path):
 
     image = cv2.resize(
         image,
-        (224, 224)
+        (IMG_SIZE, IMG_SIZE)
     )
 
     rgb = cv2.cvtColor(
@@ -197,13 +220,13 @@ def get_local_score(image_path):
 
     blurred = cv2.GaussianBlur(
         gray_difference,
-        (5, 5),
+        GAUSS,
         0
     )
 
     threshold_value = np.percentile(
         blurred,
-        97
+        PERCENTILE
     )
 
     _, binary = cv2.threshold(
@@ -214,10 +237,10 @@ def get_local_score(image_path):
     )
 
     # Remove border artifacts
-    binary[:10, :] = 0
-    binary[-10:, :] = 0
-    binary[:, :10] = 0
-    binary[:, -10:] = 0
+    binary[:BORDER, :] = 0
+    binary[-BORDER:, :] = 0
+    binary[:, :BORDER] = 0
+    binary[:, -BORDER:] = 0
 
     kernel = np.ones(
         (3, 3),
@@ -273,14 +296,14 @@ def get_local_score(image_path):
         ]
 
         # Remove tiny noise
-        if area < 15:
+        if area < AREA_MIN:
             continue
 
         # Remove huge regions
-        if area > 3000:
+        if area > AREA_MAX:
             continue
 
-        if w > 150 or h > 150:
+        if w > MAX_WH or h > MAX_WH:
             continue
 
         pixels = blurred[
@@ -447,7 +470,8 @@ for threshold in thresholds:
 
     matrix = confusion_matrix(
         labels,
-        predictions
+        predictions,
+        labels=[0, 1]
     )
 
     tn, fp, fn, tp = matrix.ravel()

@@ -186,13 +186,28 @@ for actual_class in CLASSES:
 
             # ------------------------------------------------
             # CLASSIFICATION METRICS
+            # Denominator = ALL images of this class
+            # (not only predicted-defect), so missed defects
+            # (FN) and correct good (TN) count toward accuracy.
             # ------------------------------------------------
 
-            if predicted_defect:
+            predicted_class = prediction[
+                "defect_type"
+            ]
 
-                predicted_class = prediction[
-                    "defect_type"
-                ]
+            class_total[
+                actual_class
+            ] += 1
+
+
+            if predicted_class == actual_class:
+
+                class_correct[
+                    actual_class
+                ] += 1
+
+
+            if predicted_defect:
 
                 classification_results.append({
                     "actual": actual_class,
@@ -201,18 +216,6 @@ for actual_class in CLASSES:
                         "classification_confidence"
                     ]
                 })
-
-
-                class_total[
-                    actual_class
-                ] += 1
-
-
-                if predicted_class == actual_class:
-
-                    class_correct[
-                        actual_class
-                    ] += 1
 
 
             # ------------------------------------------------
@@ -466,11 +469,13 @@ print("-" * 50)
 
 confusion = Counter()
 
-for item in classification_results:
+# Include ALL images (TN good->good included),
+# not only predicted-defect entries.
+for item in results:
 
     key = (
-        item["actual"],
-        item["predicted"]
+        item["actual_class"],
+        item["predicted_class"]
     )
 
     confusion[key] += 1

@@ -82,14 +82,23 @@ transform = transforms.Compose([
 # -----------------------------
 # 4. Load model
 # -----------------------------
-device = torch.device("cpu")
+device = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
+
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(
+        f"Model weights not found: {MODEL_PATH}\n"
+        f"Train the model first or check the path."
+    )
 
 model = Autoencoder().to(device)
 
 model.load_state_dict(
     torch.load(
         MODEL_PATH,
-        map_location=device
+        map_location=device,
+        weights_only=True
     )
 )
 

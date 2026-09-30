@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install backend deps
+        run: |
+          pip install -r backend/requirements.txt
+          pip install pytest httpx
+      - name: Backend smoke + category tests
+        run: pytest backend/tests -q
+
+  ml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: ML compile check
+        run: |
+          python -m py_compile ml/category_utils.py ml/model_defs.py \
+            ml/train_category.py ml/evaluate_category.py \
+            ml/evaluate_ground_truth.py ml/prepare_dataset.py \
+            ml/prepare_classification_data.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web-app/package-lock.json
+      - name: Install
+        working-directory: web-app
+        run: npm ci
+      - name: Lint
+        working-directory: web-app
+        run: npm run lint
+      - name: Typecheck
+        working-directory: web-app
+        run: npx tsc --noEmit
+      - name: Build
+        working-directory: web-app
+        run: npm run build

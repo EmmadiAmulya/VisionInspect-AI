@@ -1,28 +1,48 @@
+import argparse
 import cv2
 import os
+import sys
 import numpy as np
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from category_utils import get_category_dirs, normalize_category
+    _HAS_CAT = True
+except ImportError:
+    _HAS_CAT = False
 
-# ==============================
-# MVTec AD Dataset Path
-# ==============================
-
-DATASET_PATH = os.path.join(
-    "dataset",
-    "mvtec_anomaly_detection",
-    "bottle"
+_parser = argparse.ArgumentParser(
+    description="Preprocess one image (any MVTec category)."
+)
+_parser.add_argument("--category", default="bottle")
+_parser.add_argument("--image-index", type=int, default=0)
+_known, _ = _parser.parse_known_args()
+_CATEGORY = (
+    normalize_category(_known.category) if _HAS_CAT
+    else (str(_known.category).strip().lower() or "bottle")
 )
 
 
 # ==============================
-# Training Images
+# MVTec AD Dataset Path (dynamic per category)
 # ==============================
 
-TRAIN_PATH = os.path.join(
-    DATASET_PATH,
-    "train",
-    "good"
-)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+if _HAS_CAT:
+    _DIRS = get_category_dirs(_CATEGORY)
+    DATASET_PATH = _DIRS["root"]
+    TRAIN_PATH = _DIRS["train_good_dir"]
+else:
+    DATASET_PATH = os.path.join(
+        BASE_DIR, "dataset", "mvtec_anomaly_detection", _CATEGORY
+    )
+
+    TRAIN_PATH = os.path.join(
+        DATASET_PATH,
+        "train",
+        "good"
+    )
 
 
 # ==============================
@@ -67,6 +87,10 @@ def preprocess_image(image_path):
 # ==============================
 
 if __name__ == "__main__":
+
+    if not os.path.exists(TRAIN_PATH):
+        print(f"Dataset not found: {TRAIN_PATH}")
+        raise SystemExit(1)
 
     # Get image files
     image_files = [

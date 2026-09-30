@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 
 import torch
 import torch.nn as nn
@@ -6,22 +8,46 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 from torchvision import datasets, transforms
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from category_utils import get_category_dirs, normalize_category
+    _HAS_CAT = True
+except ImportError:
+    _HAS_CAT = False
+
+_parser = argparse.ArgumentParser(
+    description="Train autoencoder V2 (any MVTec category)."
+)
+_parser.add_argument("--category", default="bottle")
+_parser.add_argument("--epochs", type=int, default=30)
+_parser.add_argument("--batch-size", type=int, default=16)
+_parser.add_argument("--output", default=None)
+_v2_args, _ = _parser.parse_known_args()
+CATEGORY = (
+    normalize_category(_v2_args.category) if _HAS_CAT
+    else (str(_v2_args.category).strip().lower() or "bottle")
+)
+
 
 # ============================================================
-# PATHS
+# PATHS (dynamic per category)
 # ============================================================
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
 
-TRAIN_DIR = os.path.join(
-    BASE_DIR,
-    "dataset",
-    "mvtec_anomaly_detection",
-    "bottle",
-    "train"
-)
+if _HAS_CAT:
+    _DIRS = get_category_dirs(CATEGORY)
+    TRAIN_DIR = _DIRS["train_dir"]
+else:
+    TRAIN_DIR = os.path.join(
+        BASE_DIR,
+        "dataset",
+        "mvtec_anomaly_detection",
+        CATEGORY,
+        "train"
+    )
 
 MODEL_DIR = os.path.join(
     BASE_DIR,
@@ -31,9 +57,9 @@ MODEL_DIR = os.path.join(
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 
-MODEL_PATH = os.path.join(
+MODEL_PATH = _v2_args.output or os.path.join(
     MODEL_DIR,
-    "bottle_autoencoder_v2.pth"
+    f"{CATEGORY}_autoencoder_v2.pth"
 )
 
 
@@ -101,7 +127,7 @@ print("Validation images:", len(validation_dataset))
 # DATA LOADERS
 # ============================================================
 
-batch_size = 16
+batch_size = _v2_args.batch_size
 
 train_loader = DataLoader(
     train_dataset,
@@ -198,7 +224,7 @@ optimizer = torch.optim.Adam(
 # TRAINING
 # ============================================================
 
-epochs = 30
+epochs = _v2_args.epochs
 
 best_validation_loss = float("inf")
 

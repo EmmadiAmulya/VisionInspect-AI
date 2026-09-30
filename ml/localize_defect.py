@@ -1,7 +1,47 @@
+import argparse
 import os
+import sys
 import cv2
 import torch
 import numpy as np
+
+sys.path.insert(
+    0,
+    os.path.dirname(os.path.abspath(__file__))
+)
+
+from common import (
+    IMG_SIZE,
+    PERCENTILE,
+    GAUSS,
+    BORDER,
+    AREA_MIN,
+    AREA_MAX,
+    MAX_WH,
+    DEVICE,
+)
+
+# ============================================================
+# ARGS
+# ============================================================
+
+parser = argparse.ArgumentParser(
+    description="Localize defect with autoencoder."
+)
+
+parser.add_argument(
+    "--image",
+    default=None,
+    help="Path to input image.",
+)
+
+parser.add_argument(
+    "--model",
+    default=None,
+    help="Path to autoencoder weights.",
+)
+
+args = parser.parse_args()
 
 # ============================================================
 # PATHS
@@ -9,14 +49,14 @@ import numpy as np
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MODEL_PATH = os.path.join(
+_DEFAULT_MODEL_PATH = os.path.join(
     BASE_DIR,
     "ml",
     "models",
     "bottle_autoencoder_v2.pth"
 )
 
-IMAGE_PATH = os.path.join(
+_DEFAULT_IMAGE_PATH = os.path.join(
     BASE_DIR,
     "dataset",
     "mvtec_anomaly_detection",
@@ -25,6 +65,10 @@ IMAGE_PATH = os.path.join(
     "broken_small",
     "000.png"
 )
+
+MODEL_PATH = args.model or _DEFAULT_MODEL_PATH
+
+IMAGE_PATH = args.image or _DEFAULT_IMAGE_PATH
 
 OUTPUT_DIR = os.path.join(
     BASE_DIR,
@@ -94,7 +138,13 @@ class Autoencoder(torch.nn.Module):
 # LOAD MODEL
 # ============================================================
 
-device = torch.device("cpu")
+device = DEVICE
+
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(
+        f"Model weights not found: {MODEL_PATH}\n"
+        f"Train the model first or check the path."
+    )
 
 model = Autoencoder().to(device)
 
@@ -122,7 +172,7 @@ if image is None:
         f"Could not load image:\n{IMAGE_PATH}"
     )
 
-image = cv2.resize(image, (224, 224))
+image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
 
 original = image.copy()
 
@@ -186,7 +236,7 @@ gray_difference = cv2.cvtColor(
 # Small Gaussian blur reduces pixel-level noise.
 blurred = cv2.GaussianBlur(
     gray_difference,
-    (5, 5),
+    GAUSS,
     0
 )
 
@@ -197,7 +247,7 @@ blurred = cv2.GaussianBlur(
 
 threshold_value = np.percentile(
     blurred,
-    97
+    PERCENTILE
 )
 
 _, binary = cv2.threshold(
@@ -220,10 +270,10 @@ print(
 # Ignore pixels very close to the image border.
 # These are often caused by resizing/background differences.
 
-binary[:10, :] = 0
-binary[-10:, :] = 0
-binary[:, :10] = 0
-binary[:, -10:] = 0
+binary[:BORDER, :] = 0
+binary[-BORDER:, :] = 0
+binary[:, :BORDER] = 0
+binary[:, -BORDER:] = 0
 
 
 # ============================================================
@@ -267,15 +317,15 @@ for i in range(1, num_labels):
     area = stats[i, cv2.CC_STAT_AREA]
 
     # Ignore extremely tiny noise.
-    if area < 15:
+    if area < AREA_MIN:
         continue
 
     # Ignore extremely large regions.
-    if area > 3000:
+    if area > AREA_MAX:
         continue
 
     # Ignore regions that are almost the entire image.
-    if w > 150 or h > 150:
+    if w > MAX_WH or h > MAX_WH:
         continue
 
     # Calculate average anomaly intensity.
@@ -352,8 +402,8 @@ if len(regions) > 0:
     x1 = max(0, x - padding)
     y1 = max(0, y - padding)
 
-    x2 = min(224, x + w + padding)
-    y2 = min(224, y + h + padding)
+    x2 = min(IMG_SIZE, x + w + padding)
+    y2 = min(IMG_SIZE, y + h + padding)
 
     final_width = x2 - x1
     final_height = y2 - y1

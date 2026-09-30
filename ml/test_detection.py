@@ -1,7 +1,54 @@
+import argparse
 import os
+import sys
 import cv2
 import torch
 import numpy as np
+
+sys.path.insert(
+    0,
+    os.path.dirname(os.path.abspath(__file__))
+)
+
+from common import (
+    IMG_SIZE,
+    PERCENTILE,
+    GAUSS,
+    BORDER,
+    AREA_MIN,
+    AREA_MAX,
+    MAX_WH,
+    DEVICE,
+)
+
+
+# ============================================================
+# ARGS
+# ============================================================
+
+parser = argparse.ArgumentParser(
+    description="Test autoencoder detection on good/defect images."
+)
+
+parser.add_argument(
+    "--image",
+    default=None,
+    help="Path to defect image (overrides default broken_small/000.png).",
+)
+
+parser.add_argument(
+    "--good-image",
+    default=None,
+    help="Path to good image.",
+)
+
+parser.add_argument(
+    "--model",
+    default=None,
+    help="Path to autoencoder weights.",
+)
+
+args = parser.parse_args()
 
 
 # ============================================================
@@ -14,7 +61,7 @@ BASE_DIR = os.path.dirname(
     )
 )
 
-MODEL_PATH = os.path.join(
+_DEFAULT_MODEL_PATH = os.path.join(
     BASE_DIR,
     "ml",
     "models",
@@ -22,7 +69,7 @@ MODEL_PATH = os.path.join(
 )
 
 
-GOOD_IMAGE = os.path.join(
+_DEFAULT_GOOD_IMAGE = os.path.join(
     BASE_DIR,
     "dataset",
     "mvtec_anomaly_detection",
@@ -32,7 +79,7 @@ GOOD_IMAGE = os.path.join(
     "000.png"
 )
 
-DEFECT_IMAGE = os.path.join(
+_DEFAULT_DEFECT_IMAGE = os.path.join(
     BASE_DIR,
     "dataset",
     "mvtec_anomaly_detection",
@@ -41,6 +88,12 @@ DEFECT_IMAGE = os.path.join(
     "broken_small",
     "000.png"
 )
+
+MODEL_PATH = args.model or _DEFAULT_MODEL_PATH
+
+GOOD_IMAGE = args.good_image or _DEFAULT_GOOD_IMAGE
+
+DEFECT_IMAGE = args.image or _DEFAULT_DEFECT_IMAGE
 
 
 # ============================================================
@@ -126,7 +179,13 @@ class Autoencoder(torch.nn.Module):
 # LOAD MODEL
 # ============================================================
 
-device = torch.device("cpu")
+device = DEVICE
+
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError(
+        f"Model weights not found: {MODEL_PATH}\n"
+        f"Train the model first or check the path."
+    )
 
 model = Autoencoder().to(device)
 
@@ -158,7 +217,7 @@ def analyze_image(image_path):
 
     image = cv2.resize(
         image,
-        (224, 224)
+        (IMG_SIZE, IMG_SIZE)
     )
 
     rgb = cv2.cvtColor(
@@ -217,7 +276,7 @@ def analyze_image(image_path):
 
     blurred = cv2.GaussianBlur(
         gray_difference,
-        (5, 5),
+        GAUSS,
         0
     )
 
@@ -227,7 +286,7 @@ def analyze_image(image_path):
 
     threshold_value = np.percentile(
         blurred,
-        97
+        PERCENTILE
     )
 
     _, binary = cv2.threshold(
@@ -238,10 +297,10 @@ def analyze_image(image_path):
     )
 
     # Remove border noise
-    binary[:10, :] = 0
-    binary[-10:, :] = 0
-    binary[:, :10] = 0
-    binary[:, -10:] = 0
+    binary[:BORDER, :] = 0
+    binary[-BORDER:, :] = 0
+    binary[:, :BORDER] = 0
+    binary[:, -BORDER:] = 0
 
     kernel = np.ones(
         (3, 3),
@@ -296,13 +355,13 @@ def analyze_image(image_path):
             cv2.CC_STAT_AREA
         ]
 
-        if area < 15:
+        if area < AREA_MIN:
             continue
 
-        if area > 3000:
+        if area > AREA_MAX:
             continue
 
-        if w > 150 or h > 150:
+        if w > MAX_WH or h > MAX_WH:
             continue
 
         pixels = blurred[

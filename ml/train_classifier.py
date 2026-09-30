@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 import copy
 import torch
 import torch.nn as nn
@@ -6,6 +8,29 @@ import torch.optim as optim
 
 from torchvision import datasets, transforms, models
 from torch.utils.data import DataLoader
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from category_utils import (
+        normalize_category, resolve_classification_data_dir,
+    )
+    _HAS_CAT = True
+except ImportError:
+    _HAS_CAT = False
+
+_parser = argparse.ArgumentParser(
+    description="Train ResNet18 classifier (any MVTec category)."
+)
+_parser.add_argument("--category", default="bottle")
+_parser.add_argument("--data-dir", default=None)
+_parser.add_argument("--epochs", type=int, default=20)
+_parser.add_argument("--batch-size", type=int, default=8)
+_parser.add_argument("--output", default=None)
+_clf_args, _ = _parser.parse_known_args()
+CATEGORY = (
+    normalize_category(_clf_args.category) if _HAS_CAT
+    else (str(_clf_args.category).strip().lower() or "bottle")
+)
 
 
 # ============================================================
@@ -29,9 +54,12 @@ PROJECT_ROOT = os.path.dirname(
     )
 )
 
-DATA_DIR = os.path.join(
-    PROJECT_ROOT,
-    "classification_data_clean"
+DATA_DIR = _clf_args.data_dir or (
+    resolve_classification_data_dir(CATEGORY) if _HAS_CAT else os.path.join(
+        PROJECT_ROOT,
+        "classification_data_clean" if CATEGORY == "bottle"
+        else f"classification_data_{CATEGORY}"
+    )
 )
 
 MODEL_DIR = os.path.join(
@@ -45,9 +73,9 @@ os.makedirs(
     exist_ok=True
 )
 
-MODEL_PATH = os.path.join(
+MODEL_PATH = _clf_args.output or os.path.join(
     MODEL_DIR,
-    "bottle_classifier.pth"
+    f"{CATEGORY}_classifier.pth"
 )
 
 
@@ -149,14 +177,14 @@ print(
 
 train_loader = DataLoader(
     train_dataset,
-    batch_size=8,
+    batch_size=_clf_args.batch_size,
     shuffle=True,
     num_workers=0
 )
 
 val_loader = DataLoader(
     val_dataset,
-    batch_size=8,
+    batch_size=_clf_args.batch_size,
     shuffle=False,
     num_workers=0
 )
@@ -244,7 +272,7 @@ optimizer = optim.Adam(
 # 12. TRAINING SETTINGS
 # ============================================================
 
-num_epochs = 20
+num_epochs = _clf_args.epochs
 
 best_accuracy = 0.0
 
