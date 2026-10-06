@@ -1,6 +1,6 @@
 {
   "category": "cable",
-  "anomaly_threshold": 0.005541050920845647,
-  "best_val_loss": 0.004357304889708757,
+  "anomaly_threshold": 0.005322627402936549,
+  "best_val_loss": 0.0045400091136495275,
   "val_images": 45
 }

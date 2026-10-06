@@ -1,6 +1,6 @@
 {
   "category": "bottle",
-  "anomaly_threshold": 0.002095306917736699,
-  "best_val_loss": 0.0020013971564670405,
+  "anomaly_threshold": 0.0020226760872291446,
+  "best_val_loss": 0.0019359930107990901,
   "val_images": 42
 }
